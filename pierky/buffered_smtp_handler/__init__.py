@@ -81,7 +81,7 @@ class BufferedSMTPHandler(logging.handlers.BufferingHandler):
         return smtplib.SMTP(self.mailhost, self.mailport, None, self.timeout)
 
     def starttls(self, smtp):
-        if self.secure:
+        if self.secure is not None:
             smtp.starttls(*self.secure)
             smtp.ehlo()
 
@@ -92,10 +92,9 @@ class BufferedSMTPHandler(logging.handlers.BufferingHandler):
         try:
             smtp = self.create_smtp()
 
+            self.starttls(smtp)
             if self.smtp_username and self.smtp_password:
                 smtp.login(self.smtp_username, self.smtp_password)
-
-            self.starttls(smtp)
 
             body = ""
             for record in self.buffer:
